@@ -26,6 +26,20 @@ export default function EditorPage() {
     }
   };
 
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file && file.name.endsWith('.txt')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        setCode(text);
+      };
+      reader.readAsText(file);
+    } else {
+      alert('Por favor, sube un archivo .txt');
+    }
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -38,15 +52,25 @@ export default function EditorPage() {
         alignItems: 'center',
         marginBottom: '1.5rem'
       }}>
-        <h1 style={{
-          fontSize: '1.875rem',
-          fontWeight: '800',
-          color: '#FF99BB',
-          textAlign: 'center',
-          flex: '1'
-        }}>
-          awslovers
-        </h1>
+        <div style={{ flex: '1' }}>
+          <h2 style={{
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
+            color: '#F06292',
+            textAlign: 'center',
+            marginBottom: '0.5rem'
+          }}>
+            Diagram as Code
+          </h2>
+          <h1 style={{
+            fontSize: '1.875rem',
+            fontWeight: '800',
+            color: '#FF99BB',
+            textAlign: 'center'
+          }}>
+            awslovers
+          </h1>
+        </div>
         <button 
           onClick={logout} 
           style={{
@@ -94,6 +118,31 @@ export default function EditorPage() {
             >
               {loading ? 'Generando…' : 'Generar'}
             </button>
+            <input
+              type="file"
+              id="file-upload"
+              style={{ display: 'none' }}
+              accept=".txt"
+              onChange={handleFileUpload}
+            />
+            <label
+              htmlFor="file-upload"
+              style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: '#FFCCDD',
+                color: 'white',
+                borderRadius: '9999px',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => (e.target.style.backgroundColor = '#FF99BB')}
+              onMouseLeave={(e) => (e.target.style.backgroundColor = '#FFCCDD')}
+            >
+              Upload
+            </label>
           </div>
           <CodeEditor value={code} onChange={setCode} />
         </div>

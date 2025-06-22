@@ -1,80 +1,61 @@
-import { createContext, useState, useEffect } from 'react';
+// src/context/AuthContext.jsx
+
+import { createContext, useState, useEffect, useCallback } from 'react';
 import API from '../api';
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const validateToken = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (token) {
-      const tenantId = localStorage.getItem('authTenant');
-      setUser({ tenantId });
+      try {
+        const { data } = await API.post('/user/validate');
+        setUser(data.user);
+        // Set token again to refresh it if backend sends a new one
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
+      } catch (error) {
+        console.error('Token validation failed', error);
+        localStorage.removeItem('token');
+        setUser(null);
+      }
     }
-    // Inicializar mockUsers con un solo campo tenantId + password
-    if (!localStorage.getItem('mockUsers')) {
-      const initial = [
-        { tenantId: 'demo', password: '123' }
-      ];
-      localStorage.setItem('mockUsers', JSON.stringify(initial));
-    }
+    setLoading(false);
   }, []);
 
-  const mockSignup = ({ tenantId, password }) => {
-    const users = JSON.parse(localStorage.getItem('mockUsers') || '[]');
-    if (users.find(u => u.tenantId === tenantId)) {
-      throw new Error('Tenant ID ya existe');
+  useEffect(() => {
+    validateToken();
+  }, [validateToken]);
+
+  const signup = async ({ user_id, tenant_id, password }) => {
+    await API.post('/user/register', { user_id, tenant_id, password });
+  };
+
+  const login = async ({ user_id, tenant_id, password }) => {
+    const { data } = await API.post('/user/login', { user_id, tenant_id, password });
+    localStorage.setItem('token', data.token);
+    setUser(data.user);
+    return data;
+  };
+
+  const logout = async () => {
+    try {
+      await API.post('/user/logout');
+    } catch (error) {
+      console.error('Logout failed', error);
+    } finally {
+      localStorage.removeItem('token');
+      setUser(null);
     }
-    users.push({ tenantId, password });
-    localStorage.setItem('mockUsers', JSON.stringify(users));
-  };
-
-  const mockLogin = ({ tenantId, password }) => {
-    const users = JSON.parse(localStorage.getItem('mockUsers') || '[]');
-    const found = users.find(u =>
-      u.tenantId === tenantId &&
-      u.password === password
-    );
-    if (!found) throw new Error('Credenciales inválidas');
-    const fakeToken = btoa(`${tenantId}:${password}`);
-    localStorage.setItem('token', fakeToken);
-    localStorage.setItem('authTenant', tenantId);
-    setUser({ tenantId });
-    return { token: fakeToken };
-  };
-
-  const signup = async ({ tenantId, password }) => {
-    if (!import.meta.env.VITE_API_URL) {
-      mockSignup({ tenantId, password });
-      return;
-    }
-    await API.post('/signup', { tenantId, password });
-  };
-
-  const login = async ({ tenantId, password }) => {
-  // Forzar mock si es demo
-  const useMock = !import.meta.env.VITE_API_URL || tenantId === 'demo';
-
-  if (useMock) {
-    return mockLogin({ tenantId, password });
-  }
-  // Branch real
-  const { data } = await API.post('/login', { tenantId, password });
-  localStorage.setItem('token', data.token);
-  localStorage.setItem('authTenant', tenantId);
-  setUser({ tenantId });
-  return data;
-};
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('authTenant');
-    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -4,12 +4,12 @@ import { Link, useNavigate } from 'react-router-dom';
 
 export default function SignupPage() {
   const { signup } = useContext(AuthContext);
-  const [form, setForm] = useState({ tenantId: '', password: '' });
+  const [form, setForm] = useState({ user_id: '', tenant_id: '', password: '' });
   const nav = useNavigate();
 
   const onSubmit = async e => {
     e.preventDefault();
-    if (!form.tenantId || !form.password) {
+    if (!form.user_id || !form.tenant_id || !form.password) {
       return alert('Completa todos los campos');
     }
     try {
@@ -49,6 +49,30 @@ export default function SignupPage() {
           awslovers
         </h1>
         <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {/* User ID */}
+          <div>
+            <label style={{
+              display: 'block',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+              color: '#374151',
+              marginBottom: '0.25rem'
+            }}>
+              User ID
+            </label>
+            <input
+              type="text"
+              value={form.user_id}
+              onChange={e => setForm({ ...form, user_id: e.target.value })}
+              style={{
+                width: '100%',
+                padding: '0.5rem 0.75rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.5rem',
+                fontSize: '0.875rem'
+              }}
+            />
+          </div>
           {/* Tenant ID */}
           <div>
             <label style={{
@@ -62,8 +86,8 @@ export default function SignupPage() {
             </label>
             <input
               type="text"
-              value={form.tenantId}
-              onChange={e => setForm({ ...form, tenantId: e.target.value })}
+              value={form.tenant_id}
+              onChange={e => setForm({ ...form, tenant_id: e.target.value })}
               style={{
                 width: '100%',
                 padding: '0.5rem 0.75rem',
