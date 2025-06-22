@@ -62,14 +62,14 @@ export default function EditorPage() {
           }}>
             Diagram as Code
           </h2>
-          <h1 style={{
-            fontSize: '1.875rem',
-            fontWeight: '800',
-            color: '#FF99BB',
+        <h1 style={{
+          fontSize: '1.875rem',
+          fontWeight: '800',
+          color: '#FF99BB',
             textAlign: 'center'
-          }}>
-            awslovers
-          </h1>
+        }}>
+          awslovers
+        </h1>
         </div>
         <button 
           onClick={logout} 
