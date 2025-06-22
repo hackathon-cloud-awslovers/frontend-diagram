@@ -1,0 +1,62 @@
+# Dependencias de Node
+/node_modules
+/awslovers-frontend/node_modules
+
+# Directorios de build (Vite)
+dist/
+/awslovers-frontend/dist/
+
+# Cachés de Vite
+.vite/
+/awslovers-frontend/.vite/
+
+# Archivos de entorno (variables sensibles)
+/.env
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.log
+
+# Directorios de cobertura de tests
+coverage/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDEs y editores
+.vscode/
+.idea/
+/*.suo
+/*.ntvs*
+/*.njsproj
+/*.sln
+
+# Mac
+.AppleDouble
+.LSOverride
+
+# Windows
+ehthumbs.db
+Icon?
+
+# Yarn v2+
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Optional: si usas pnpm
+.pnpm-store
+
+# VSCode extensions recommendations (si lo tenías versionado)
+.vscode/extensions.json
